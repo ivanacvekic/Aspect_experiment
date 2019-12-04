@@ -36,44 +36,36 @@ descriptives = df.groupby('Group').describe()
 # calculating only means for all columns per Group
 mean = df.groupby('Group').mean()
 
-## Significance testing
-# Using ANOVA to test significane between groups for:
-# LexTALE - proficiency test in English
-mod = ols('LexTALE ~ Group', data=df).fit()
-LextTALE_ANOVA = sm.stats.anova_lm(mod, typ=2)
-print(LextTALE_ANOVA)
-# CFT - category fluency task for proficiency in English
-mod = ols('CFT ~ Group', data=df).fit()
-CFT_ANOVA = sm.stats.anova_lm(mod, typ=2)
-print(CFT_ANOVA)
-# Age of participants
-mod = ols('Age ~ Group', data=df).fit()
-Age_ANOVA = sm.stats.anova_lm(mod, typ=2)
-print(Age_ANOVA)
-# Age of Acquisition of participants
-mod = ols('AoA ~ Group', data=df).fit()
-AoA_ANOVA = sm.stats.anova_lm(mod, typ=2)
-print(AoA_ANOVA)
-# Years of learning English
-mod = ols('Years ~ Group', data=df).fit()
-Years_ANOVA = sm.stats.anova_lm(mod, typ=2)
-print(Years_ANOVA)
-# Cloze Test - testing participants' knowledge of Aspect
-mod = ols('ClozeTestP ~ Group', data=df).fit()
-ClozeTestP_ANOVA = sm.stats.anova_lm(mod, typ=2)
-print(ClozeTestP_ANOVA)
-
 ## Testing normality of the data for significant results
 # using the Shapiro–Wilk test for normal distribution testing
 LexTALE_N = stats.shapiro(df['LexTALE'])
+CFT_N = stats.shapiro(df['CFT'])
 Age_N = stats.shapiro(df['Age'])
 AoA_N = stats.shapiro(df['AoA'])
+Years_N = stats.shapiro(df['Years'])
 ClozeTestP_N = stats.shapiro(df['ClozeTestP'])
 
 # Creating subsets by Group for significance testing between-groups
 S = df[df.Group == 'Spanish']
 C = df[df.Group == 'Croatian']
 G = df[df.Group == 'German']
+
+## Significance testing
+# Using ANOVA and Kruskal-Willis tests (where appropriate) to test significane between groups for:
+# LexTALE - proficiency test in English
+stats.kruskal(G['LexTALE'], C['LexTALE'], S['LexTALE'])
+# CFT - category fluency task for proficiency in English
+mod = ols('CFT ~ Group', data=df).fit()
+CFT_ANOVA = sm.stats.anova_lm(mod, typ=2)
+print(CFT_ANOVA)
+# Age of participants
+stats.kruskal(G['Age'], C['Age'], S['Age'])
+# Age of Acquisition of participants
+stats.kruskal(G['AoA'], C['AoA'], S['AoA'])
+# Years of learning English
+stats.kruskal(G['Years'], C['Years'], S['Years'])
+# Cloze Test - testing participants' knowledge of Aspect
+stats.kruskal(G['ClozeTestP'], C['ClozeTestP'], S['ClozeTestP'])
 
 ## Significance testing between each Group pair
 # in order to find out where the difference is
